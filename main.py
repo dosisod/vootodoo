@@ -3,15 +3,17 @@ import os
 
 HELP_MSG="""USAGE: python3 main.py [Command] [Params]
 
-(No command)  - Print all tasks
+(No command)  * Print all tasks
 h[elp]        - This message
 i[nit]        - Make .todo file
 a[dd] STR     - Add STR to todo list
-r[m] NUM      - Removes task NUM from list
-s[earch] STR  - Search and print tasks that match substring STR
-r[egex] REG   - Search and print tasks that match regex REG
-v[im]         - Open list in vim
-v[im] REG     - Open list in vim with regex REG highlighted
+r[m] NUM      * Removes task NUM from list
+s[earch] STR  * Search and print tasks that match substring STR
+r[egex] REG   * Search and print tasks that match regex REG
+v[im]         * Open list in vim
+v[im] REG     * Open list in vim with regex REG highlighted
+
+* Not implemented yet
 """
 
 def find(indexing=False):
@@ -46,9 +48,11 @@ def find(indexing=False):
 
 if __name__=="__main__":
 	args=sys.argv[1:] #remove filename from args
-	args[0]=args[0].lower()
 
 	filen=find()
+
+	if len(args)>0:
+		args[0]=args[0].lower()
 
 	if len(args)>1: #merges all args after first arg into one
 		args=[
@@ -84,5 +88,19 @@ if __name__=="__main__":
 		else:
 			print(HELP_MSG)
 
-	else: #len(args) is 3 (command with params is being ran)
-		print(HELP_MSG)
+	else: #len(args) is 2 (command with params is being ran)
+		if args[0]=="add" or args[0]=="a": #add new task to todo file
+			filen=find()
+
+			if filen: #if filename is set add to todo
+				with open(filen, "a") as f:
+					f.write(args[1])
+
+				print("added \""+args[1]+"\" in "+filen)
+
+			else:
+				print("todo file not found, run\n\nmain.py init\n\nto create todo file")
+				exit(-1)
+
+		else:
+			print(HELP_MSG)
