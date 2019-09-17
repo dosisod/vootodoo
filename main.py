@@ -14,10 +14,11 @@ v[im]         - Open list in vim
 v[im] REG     - Open list in vim with regex REG highlighted
 """
 
-def find():
+def find(indexing=False):
 	path=os.getcwd().split("/")
 
 	filen=None
+	total=[] #stores all searched paths if indexing
 	while len(path)>2: #find the closest .todo file from the current directory
 		filen=""
 		for directory in path:
@@ -26,29 +27,62 @@ def find():
 		filen+=".todo"
 
 		if os.path.isfile(filen):
-			break
+			if not indexing:
+				break #todo file was found, return the path
+
+		else:
+			total.append(filen)
 
 		path=path[:-1]
 
-	return filen
+	if not indexing:
+		if len(path)==2:
+			return "" #return nothing if a .todo file wasnt found
+
+		return filen
+
+	else:
+		return total
 
 if __name__=="__main__":
 	args=sys.argv[1:] #remove filename from args
+	args[0]=args[0].lower()
 
 	filen=find()
 
 	if len(args)>1: #merges all args after first arg into one
 		args=[
-			args[0].lower(),
+			args[0],
 			" ".join(str(i) for i in args[1:])
 		]
 
 	if len(args)==0: #user just wants to print todo list
-		pass
+		print(HELP_MSG)
 
 	elif len(args)==1: #a command is being ran w/o params
-		if args[0]=="help":
+		if args[0]=="init" or args[0]=="i":
+			paths=find(True)
+
+			print("Choose folder to create .todo file in:\n")
+
+			for index, val in enumerate(paths):
+				print("["+str(index)+"] - "+val)
+
+			print("") #adds newline
+			choice=int(input("> "))
+
+			if 0<=choice and choice<len(paths):
+				f=open(paths[choice], "w+") #only create file
+				f.close()
+
+				print("\nCreated file", paths[choice])
+
+			else:
+				print("\nInvalid selection, quitting")
+				exit(-1)
+
+		else:
 			print(HELP_MSG)
 
 	else: #len(args) is 3 (command with params is being ran)
-		pass
+		print(HELP_MSG)
