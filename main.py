@@ -7,7 +7,8 @@ HELP_MSG="""USAGE: python3 main.py [Command] [Params]
 h[elp]        - This message
 i[nit]        - Make .todo file
 a[dd] STR     - Add STR to todo list
-r[m] NUM      * Removes task NUM from list
+r[m] NUM      - Removes task NUM from list
+r[m] NUM,NUM  - Removes comma-seperated list of tasks from list
 s[earch] STR  * Search and print tasks that match substring STR
 r[egex] REG   * Search and print tasks that match regex REG
 v[im]         * Open list in vim
@@ -97,8 +98,6 @@ if __name__=="__main__":
 
 	else: #len(args) is 2 (command with params is being ran)
 		if args[0]=="add" or args[0]=="a": #add new task to todo file
-			filen=find()
-
 			if filen: #if filename is set add to todo
 				with open(filen, "a") as f:
 					f.write("\n"+args[1])
@@ -108,6 +107,18 @@ if __name__=="__main__":
 			else:
 				print("todo file not found, run\n\nmain.py init\n\nto create todo file")
 				exit(-1)
+
+		elif args[0]=="rm" or args[0]=="r": #removes the indicated values from list
+			remove=[int(i) for i in args[1].split(",")]
+
+			data=[]
+			with open(filen, "r+") as f: #read all lines from file
+				data=f.readlines()
+
+			with open(filen, "w+") as f: #write all lines that arent about to be removed
+				for index, val in enumerate(data):
+					if index not in remove:
+						f.write(val)
 
 		else:
 			print(HELP_MSG)
