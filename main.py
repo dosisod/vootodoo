@@ -3,7 +3,7 @@ import os
 
 HELP_MSG="""USAGE: python3 main.py [Command] [Params]
 
-(No command)  * Print all tasks
+(No command)  - Print all tasks
 h[elp]        - This message
 i[nit]        - Make .todo file
 a[dd] STR     - Add STR to todo list
@@ -51,7 +51,7 @@ if __name__=="__main__":
 
 	filen=find()
 
-	if len(args)>0:
+	if len(args)>0: #if the first param is set, set it to lowercase
 		args[0]=args[0].lower()
 
 	if len(args)>1: #merges all args after first arg into one
@@ -61,7 +61,14 @@ if __name__=="__main__":
 		]
 
 	if len(args)==0: #user just wants to print todo list
-		print(HELP_MSG)
+		if filen:
+			with open(filen, "r") as f:
+				for index, val in enumerate(f):
+					print("["+str(index)+"] - "+val.strip()) #loops through and prints indexes for each line
+
+		else:
+			print("todo file not found, run\n\nmain.py init\n\nto create todo file")
+			exit(-1)
 
 	elif len(args)==1: #a command is being ran w/o params
 		if args[0]=="init" or args[0]=="i":
@@ -94,7 +101,7 @@ if __name__=="__main__":
 
 			if filen: #if filename is set add to todo
 				with open(filen, "a") as f:
-					f.write(args[1])
+					f.write("\n"+args[1])
 
 				print("added \""+args[1]+"\" in "+filen)
 
