@@ -1,5 +1,7 @@
+from re import error
 import sys
 import os
+import re
 
 HELP_MSG="""USAGE: python3 main.py [Command] [Params]
 
@@ -9,8 +11,8 @@ i[nit]        - Make .todo file
 a[dd] STR     - Add STR to todo list
 r[m] NUM      - Removes task NUM from list
 r[m] NUM,NUM  - Removes comma-seperated list of tasks from list
-s[earch] STR  * Search and print tasks that match substring STR
-r[egex] REG   * Search and print tasks that match regex REG
+s[earch] STR  - Search and print tasks that match substring STR
+rege[x] REG   - Search and print tasks that match regex REG
 v[im]         * Open list in vim
 v[im] REG     * Open list in vim with regex REG highlighted
 
@@ -119,6 +121,23 @@ if __name__=="__main__":
 				for index, val in enumerate(data):
 					if index not in remove:
 						f.write(val)
+
+		elif args[0]=="search" or args[0]=="s": #substring based search
+			with open(filen, "r+") as f:
+				for index, val in enumerate(f):
+					if args[1] in val:
+						print("["+str(index)+"] - "+val.strip())
+
+		elif args[0]=="regex" or args[0]=="x": #regex based search
+			with open(filen, "r+") as f:
+				for index, val in enumerate(f):
+					stripped=val.strip()
+					try:
+						if re.match(args[1], stripped)[0]:
+							print("["+str(index)+"] - "+stripped)
+
+					except (re.error, TypeError):
+						print("Invalid regex, skipping")
 
 		else:
 			print(HELP_MSG)
