@@ -11,6 +11,7 @@ i[nit]        - Make .todo file
 a[dd] STR     - Add STR to todo list
 r[m] NUM      - Removes task NUM from list
 r[m] NUM,NUM  - Removes comma-seperated list of tasks from list
+impor[t] STR  - Import an existing file STR to a .todo file
 s[earch] STR  - Search and print tasks that match substring STR
 rege[x] REG   - Search and print tasks that match regex REG
 v[im]         * Open list in vim
@@ -18,6 +19,24 @@ v[im] REG     * Open list in vim with regex REG highlighted
 
 * Not implemented yet
 """
+
+def ask_path():
+	paths=find(True)
+
+	print("Choose folder to create .todo file in:\n")
+
+	for index, val in enumerate(paths):
+		print("["+str(index)+"] - "+val)
+
+	print("") #adds newline
+	choice=int(input("> "))
+
+	if 0<=choice and choice<len(paths):
+		return paths[choice] #valid selection, return it
+
+	else:
+		print("\nInvalid selection, quitting")
+		exit(-1)
 
 def find(indexing=False):
 	path=os.getcwd().split("/")
@@ -75,25 +94,12 @@ if __name__=="__main__":
 
 	elif len(args)==1: #a command is being ran w/o params
 		if args[0]=="init" or args[0]=="i":
-			paths=find(True)
+			choice=ask_path()
 
-			print("Choose folder to create .todo file in:\n")
+			f=open(choice, "w+") #only create file
+			f.close()
 
-			for index, val in enumerate(paths):
-				print("["+str(index)+"] - "+val)
-
-			print("") #adds newline
-			choice=int(input("> "))
-
-			if 0<=choice and choice<len(paths):
-				f=open(paths[choice], "w+") #only create file
-				f.close()
-
-				print("\nCreated file", paths[choice])
-
-			else:
-				print("\nInvalid selection, quitting")
-				exit(-1)
+			print("\nCreated file", choice)
 
 		else:
 			print(HELP_MSG)
@@ -138,6 +144,26 @@ if __name__=="__main__":
 
 					except (re.error, TypeError):
 						print("Invalid regex, skipping")
+
+		elif args[0]=="import" or args[0]=="t":
+			data=[]
+			if os.path.isfile(args[1]):
+				with open(args[1], "r+") as f:
+					for index, val in enumerate(f):
+						if val.strip(): #only grab line if not blank
+							data.append(val.strip())
+
+			else:
+				print("Cannot find file: '"+args[0]+"', exitting")
+				exit(-1)
+
+			choice=ask_path()
+
+			print(choice)
+			with open(choice, "w+") as f:
+				help(f)
+				for line in data:
+					f.write(line+"\n")
 
 		else:
 			print(HELP_MSG)
