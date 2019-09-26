@@ -40,6 +40,7 @@ r[m] NUM,NUM  - Removes comma-seperated list of tasks from list
 impor[t] STR  - Import an existing file STR to a .todo file
 s[earch] STR  - Search and print tasks that match substring STR
 rege[x] REG   - Search and print tasks that match regex REG
+c[lean]       - Cleans current file of newlines and whitespace
 v[im]         * Open list in vim
 v[im] REG     * Open list in vim with regex REG highlighted
 ```

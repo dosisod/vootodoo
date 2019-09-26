@@ -14,6 +14,7 @@ r[m] NUM,NUM  - Removes comma-seperated list of tasks from list
 impor[t] STR  - Import an existing file STR to a .todo file
 s[earch] STR  - Search and print tasks that match substring STR
 rege[x] REG   - Search and print tasks that match regex REG
+c[lean]       - Cleans current file of newlines and whitespace
 v[im]         * Open list in vim
 v[im] REG     * Open list in vim with regex REG highlighted
 
@@ -100,6 +101,19 @@ if __name__=="__main__":
 			f.close()
 
 			print("\nCreated file", choice)
+
+		elif args[0]=="clean" or args[0]=="c":
+			data=[]
+			with open(filen, "r+") as f:
+				for val in f:
+					data.append(val)
+
+			with open(filen, "w+") as f:
+				for val in data:
+					if val.strip():
+						f.write(val.strip()+"\n")
+
+			print("Done")
 
 		else:
 			print(HELP_MSG)
